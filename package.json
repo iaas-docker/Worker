@@ -1,19 +1,14 @@
 {
   "name": "iaas-worker",
   "version": "1.0.0",
-  "description": "Instance processor",
-  "main": "index.js",
+  "description": "Instance allocator",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@sendgrid/mail": "^6.3.1",
-    "aws-sdk": "^2.320.0",
-    "memjs": "^1.2.0",
-    "pg": "^7.4.3",
-    "redis": "^2.8.0",
-    "sendgrid": "^4.2.0"
+    "aws-sdk": "^2.320.0"
   }
 }

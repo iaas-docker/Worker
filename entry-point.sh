@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-node index.js 2>&1
+node src/index.js 2>&1

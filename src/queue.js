@@ -1,4 +1,5 @@
 const QUEUE_URL = "https://sqs.sa-east-1.amazonaws.com/916203701249/iaas-queue.fifo";
+const NonExistingQueueCode = 'AWS.SimpleQueueService.NonExistentQueue';
 AWS = require('aws-sdk');
 
 AWS.config.update({
@@ -20,34 +21,79 @@ module.exports.receiveMessage = function(){
   return new Promise((resolve, reject) => {
     let params = {
       AttributeNames: [
-        "SentTimestamp"
+        "MessageGroupId"
       ],
       MaxNumberOfMessages: 1,
-      MessageAttributeNames: [
-        "All"
-      ],
       QueueUrl: QUEUE_URL,
       VisibilityTimeout: 20,
       WaitTimeSeconds: 0
     };
     
     sqs.receiveMessage(params).promise().then(data => {
-      if (data.Messages == undefined)
-        resolve(undefined);
-      else{
-        let deleteParams = {
-          QueueUrl: QUEUE_URL,
-          ReceiptHandle: data.Messages[0].ReceiptHandle
-        };
-        sqs.deleteMessage(deleteParams).promise().then(data2 => {
-          resolve(data.Messages);
-        }).catch(err => {
-          console.log("Delete Error", err);
-        })
-      }
-    }).catch(err2 => {
-      console.log("Receive Error", err2);
+      resolve(data);
+    }).catch(err => {
+      reject(err)
     });
   });
+};
+
+module.exports.getQueueUrl = async function (machineId) {
+  let params = {
+    QueueName: machineId+'.fifo'
+  };
+  try{
+    let result = await sqs.getQueueUrl(params).promise();
+    return result.QueueUrl;
+  } catch (err){
+    if (err.code == NonExistingQueueCode){
+      return await createQueue(machineId);
+    } else {
+      throw err;
+    }
+  }
+}
+
+async function createQueue(machineId){
+  let params = {
+    QueueName: machineId+'.fifo',
+    Attributes: {
+      'FifoQueue': 'true',
+      'ContentBasedDeduplication': 'true'
+    }
+  };
+  try {
+    let queue = await sqs.createQueue(params).promise();
+    return queue.QueueUrl;
+  } catch (err) { throw err; }
+}
+
+module.exports.sendMessage = function(message, messageGroupId){
+  return new Promise((resolve, reject) => {
+    let params = {
+      MessageBody: JSON.stringify(message),
+      QueueUrl: QUEUE_URL,
+      // DelaySeconds: '3',
+      // MessageDeduplicationId: 'STRING_VALUE',
+      MessageGroupId: messageGroupId
+    };
+
+    sqs.sendMessage(params).promise().then(data => {
+      resolve(data);
+    }).catch(err => {
+      reject(err)
+    });
+  });
+};
+
+module.exports.deleteMessage = async function(receiptHandle){
+    let deleteParams = {
+      QueueUrl: QUEUE_URL,
+      ReceiptHandle: receiptHandle
+    };
+    sqs.deleteMessage(deleteParams).promise().then(data => {
+      return data;
+    }).catch(err => {
+      throw err;
+    })
 };
 

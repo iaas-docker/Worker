@@ -78,8 +78,8 @@ client.connect(function(err) {
   };
 
   module.exports.updateIpAddress  = async function (id) {
-    const Instance = db.collection('instances');
-    let result = await Instance.updateOne({ '_id' : ObjectID(id) }, { $set: {
+    const IpAddress = db.collection('ipaddresses');
+    let result = await IpAddress.updateOne({ '_id' : ObjectID(id) }, { $set: {
         state: IP_ASSIGNED,
       }
     });

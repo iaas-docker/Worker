@@ -24,8 +24,8 @@ async function getAndProcess() {
         instance.ipAddressId = ipAddress._id.toHexString();
 
         await mongo.updateInstanceSuccess(instance);
-        await mongo.updateIpAddress(ipAddress._id);
-        await mongo.updatePhysicalMachine(physicalMachine._id,
+        await mongo.updateIpAddress(instance.ipAddressId);
+        await mongo.updatePhysicalMachine(instance.physicalMachineId,
           physicalMachine.freeCores-instance.cores,
           physicalMachine.freeRam-instance.ram,
           physicalMachine.freeMemory-instance.memory

@@ -25,7 +25,7 @@ module.exports.receiveMessage = function(){
       ],
       MaxNumberOfMessages: 1,
       QueueUrl: QUEUE_URL,
-      VisibilityTimeout: 20,
+      VisibilityTimeout: 10,
       WaitTimeSeconds: 0
     };
     
@@ -67,14 +67,12 @@ async function createQueue(machineId){
   } catch (err) { throw err; }
 }
 
-module.exports.sendMessage = function(message, messageGroupId){
+module.exports.sendMessage = function(message, action, queueUrl){
   return new Promise((resolve, reject) => {
     let params = {
       MessageBody: JSON.stringify(message),
-      QueueUrl: QUEUE_URL,
-      // DelaySeconds: '3',
-      // MessageDeduplicationId: 'STRING_VALUE',
-      MessageGroupId: messageGroupId
+      QueueUrl: queueUrl,
+      MessageGroupId: action
     };
 
     sqs.sendMessage(params).promise().then(data => {

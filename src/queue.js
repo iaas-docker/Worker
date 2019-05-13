@@ -1,4 +1,4 @@
-const QUEUE_URL = "https://sqs.sa-east-1.amazonaws.com/916203701249/iaas-queue.fifo";
+const QUEUE_URL = process.env.QUEUE_URL
 const NonExistingQueueCode = 'AWS.SimpleQueueService.NonExistentQueue';
 AWS = require('aws-sdk');
 
@@ -72,7 +72,13 @@ module.exports.sendMessage = function(message, action, queueUrl){
     let params = {
       MessageBody: JSON.stringify(message),
       QueueUrl: queueUrl,
-      MessageGroupId: action
+      // MessageAttributes: {
+      //   ACTION: {
+      //     DataType: '',
+      //     StringValue:'START'
+      //   }
+      // },
+      MessageGroupId: 'START'
     };
 
     sqs.sendMessage(params).promise().then(data => {

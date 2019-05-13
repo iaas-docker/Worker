@@ -11,7 +11,13 @@ const url = process.env.MONGO_URL;
 const dbName = 'myproject';
 
 // Create a new MongoClient
-const client = new MongoClient(url, { useNewUrlParser: true });
+const client = new MongoClient(url, {
+  useNewUrlParser: true,
+  // sets how many times to try reconnecting
+  reconnectTries: Number.MAX_VALUE,
+  // sets the delay between every retry (milliseconds)
+  reconnectInterval: 2000
+});
 
 client.connect(function(err) {
   assert.equal(null, err);

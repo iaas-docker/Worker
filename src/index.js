@@ -19,12 +19,12 @@ async function getAndProcess() {
 
       try {
         let physicalMachine = await mongo.findPhysicalMachine(instance.cores, instance.ram, instance.memory);
-        let ipAddress = await mongo.findIpAddress();
+        // let ipAddress = await mongo.findIpAddress();
         instance.physicalMachineId = physicalMachine._id.toHexString();
-        instance.ipAddressId = ipAddress._id.toHexString();
+        // instance.ipAddressId = ipAddress._id.toHexString();
 
         await mongo.updateInstanceSuccess(instance);
-        await mongo.updateIpAddress(instance.ipAddressId);
+        // await mongo.updateIpAddress(instance.ipAddressId);
         await mongo.updatePhysicalMachine(instance.physicalMachineId,
           physicalMachine.freeCores-instance.cores,
           physicalMachine.freeRam-instance.ram,
